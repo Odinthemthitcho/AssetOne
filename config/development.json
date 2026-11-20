@@ -1,0 +1,5 @@
+{
+  "APP_ENV": "development",
+  "USE_DEMO_DATA": "true",
+  "API_BASE_URL": ""
+}
