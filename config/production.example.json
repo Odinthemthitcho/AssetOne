@@ -1,0 +1,5 @@
+{
+  "APP_ENV": "production",
+  "USE_DEMO_DATA": "false",
+  "API_BASE_URL": ""
+}
