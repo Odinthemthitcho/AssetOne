@@ -40,21 +40,28 @@ class _AssetOneRootState extends State<AssetOneRoot> {
     });
   }
 
-  Future<void> _perform(Future<void> Function() action) async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      await action();
-    } catch (_) {
-      if (mounted) {
-        setState(() => _error = 'Không thể mở hoặc lưu dữ liệu AssetOne.');
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+ 
+Future<void> _perform(Future<void> Function() action) async {
+  setState(() {
+    _loading = true;
+    _error = null;
+  });
+
+  try {
+    await action();
+  } catch (error, stackTrace) {
+    debugPrint('========== ASSETONE ERROR ==========');
+    debugPrint('Error: $error');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (mounted) {
+      setState(() => _error =
+          'Không thể mở hoặc lưu dữ liệu AssetOne.');
     }
+  } finally {
+    if (mounted) setState(() => _loading = false);
   }
+}
 
   Future<void> _finishIntro() => _perform(() async {
     await _deps.storage.write(_introKey, 'seen');
