@@ -10,12 +10,11 @@ import 'local_auth.dart';
 /// Authentication service using AssetOne Node.js Backend.
 final class ApiAuth {
   ApiAuth({
-    required ApiClient apiClient,
-    required SecureTokenStorage tokenStorage,
-    required LocalStorage profileStorage,
-  }) : _api = apiClient,
-       _tokens = tokenStorage,
-       _profileStorage = profileStorage;
+  required ApiClient apiClient,
+  required SecureTokenStorage tokenStorage,
+  required this._profileStorage,
+}) : _api = apiClient,
+     _tokens = tokenStorage;
 
   final ApiClient _api;
   final SecureTokenStorage _tokens;

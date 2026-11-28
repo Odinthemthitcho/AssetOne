@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import '../../data/api_auth.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/local_auth.dart';
+
 
 class Brand extends StatelessWidget {
   const Brand({super.key, this.large = false});
@@ -277,7 +278,7 @@ class AssetOneAccessPage extends StatefulWidget {
     required this.initialMode,
     super.key,
   });
-  final LocalAuth auth;
+  final ApiAuth auth;
   final AccessMode initialMode;
 
   @override

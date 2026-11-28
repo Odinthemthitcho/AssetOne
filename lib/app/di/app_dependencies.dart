@@ -1,9 +1,11 @@
+
 import '../../core/config/app_config.dart';
 import '../../core/storage/local_storage.dart';
+import '../../core/storage/secure_token_storage.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/http_api_client.dart';
 
-import '../../features/auth/data/local_auth.dart';
+import '../../features/auth/data/api_auth.dart';
 import '../../features/assets/data/repositories/demo_assets_repository.dart';
 import '../../features/assets/data/repositories/unconfigured_assets_repository.dart';
 import '../../features/assets/domain/repositories/assets_repository.dart';
@@ -14,13 +16,20 @@ import '../../features/portfolio/data/portfolio_store.dart';
 /// Composition root: choose implementations outside widgets and domain.
 final class AppDependencies {
   AppDependencies(this.config, {LocalStorage? storage})
-    : storage = storage ?? createLocalStorage();
+      : storage = storage ?? createLocalStorage();
 
   final AppConfig config;
   final LocalStorage storage;
 
-  // Authentication - existing implementation.
-  late final LocalAuth auth = LocalAuth(storage);
+  // Secure storage for JWT.
+  late final SecureTokenStorage tokenStorage = SecureTokenStorage();
+
+  // Authentication through Node.js Backend.
+  late final ApiAuth auth = ApiAuth(
+    apiClient: apiClient,
+    tokenStorage: tokenStorage,
+    profileStorage: storage,
+  );
 
   // Portfolio - existing implementation.
   late final PortfolioStore portfolio = PortfolioStore(storage);
@@ -48,7 +57,6 @@ final class AppDependencies {
   AssetsController createAssetsController() =>
       AssetsController(GetAssets(assetsRepository));
 
-  // Release HTTP resources when application dependencies are disposed.
   void dispose() {
     _httpApiClient.close();
   }
