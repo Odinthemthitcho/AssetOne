@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -36,8 +37,36 @@ class HttpApiClient implements ApiClient {
     try {
       final response = await request().timeout(ApiConfig.receiveTimeout);
 
-      final body = response.body.isEmpty ? null : jsonDecode(response.body);
+      final rawBody = response.body;
+      final contentType = response.headers['content-type'] ?? 'unknown';
 
+      // Diagnostic: do not print access tokens or passwords.
+      final preview = rawBody.replaceAll(RegExp(r'\s+'), ' ');
+
+      developer.log(
+        '[AssetOne API] HTTP ${response.statusCode}'
+        ' | Content-Type: $contentType'
+        ' | Body length: ${rawBody.length}'
+        ' | Preview: ${preview.length > 100 ? preview.substring(0, 100) : preview}',
+        name: 'AssetOne API',
+      );
+
+      Object? body;
+
+      if (rawBody.trim().isNotEmpty) {
+        try {
+          body = jsonDecode(rawBody);
+        } on FormatException {
+          throw ApiException(
+            'Backend returned non-JSON response. '
+            'HTTP ${response.statusCode}, '
+            'Content-Type: $contentType',
+            statusCode: response.statusCode,
+          );
+        }
+      }
+
+      // Handle HTTP errors.
       if (response.statusCode < 200 || response.statusCode >= 300) {
         String message = 'Request failed';
 
